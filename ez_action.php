@@ -51,7 +51,7 @@
 <a href = "ez_index.php"> Go Query Interface</a> <p>
 
 <form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>">
+Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>" required>
 <input type="submit" value="TIMETABLE">
 </form>
 
