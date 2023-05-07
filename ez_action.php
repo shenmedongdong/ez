@@ -1,4 +1,5 @@
 <?php
+	error_reporting(0);
 	//連接 data server
 	$dbhost = '127.0.0.1';
 	$dbuser = 'gigang_user';
