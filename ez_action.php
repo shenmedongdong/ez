@@ -1,5 +1,4 @@
 <?php
-
 	//連接 data server
 	$dbhost = '127.0.0.1';
 	$dbuser = 'gigang_user';
@@ -9,7 +8,7 @@
 	mysqli_query($conn, "SET NAMES 'utf8'");
 	mysqli_select_db($conn, $dbname);
 	
-
+	//讀
 	if(isset($_POST['StudentAccount'])) {
 		$StudentAccount=$_POST["StudentAccount"];
 
@@ -42,23 +41,26 @@
 				$add_query_result = mysqli_query($conn, $add_query) or die('MySQL query error');
 			}
 		}
+	}	
 		//
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ?>
 
 
 
 <a href = "ez_index.php"> Go Query Interface</a> <p>
 
+<form name="form_timetable" method="post" action="ez_scheduler.php" >
+Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>">
+<input type="submit" value="TIMETABLE">
+</form>
+
 <form name="form_search" method="post" action="ez_action.php" >
 Please insert course name or number: <input name="SectionNumber">
 <input type="submit" value="SEARCH">
 </form>
 
-<form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>">
-<input type="submit" value="TIMETABLE">
-</form>
+
 
 <form name="form3" method="post" action="ez_action.php" >
 Please insert student number: <input name="studentid" value="<?php echo $StudentAccount;?>">
@@ -70,20 +72,39 @@ Please insert course number: <input name="addcourseid">
 
 <?php
 
-		//print 選課目錄
-		echo "<p>Course List: </p>";
-		$course_list = "SELECT * FROM course WHERE department = 'IECS'";
-			$course_list_query =  mysqli_query($conn, $course_list) or die('MySQL query error');
-			while($row = mysqli_fetch_array($course_list_query)){
-				echo $row['section_id'] . " ";
-				echo $row['course_name'] . " ";
-				echo $row['credits'] . " ";
-				echo $row['require_elective'] . " ";
-				echo $row['department'] . " ";
-				echo $row['amount_now'] . "/".$row['amount_limit'] . "<br>";
+	if($StudentAccount!=NULL){
+	$gigang_temp_query = "SELECT * FROM course";
+	$gigang_temp_query_result =  mysqli_query($conn, $gigang_temp_query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($gigang_temp_query_result)){
+		echo $row['section_id'] . " ";
+		echo $row['course_name'] . " ";
+		echo $row['credits'] . " ";
+		echo $row['require_elective'] . " ";
+		echo $row['department'] . " ";
+		echo $row['amount_now'] . "/".$row['amount_limit'] . "  ";
+		$I_want_to_go_home= $row['course_id'];
+		
+		$course_time_query = "SELECT * FROM time_table
+							LEFT JOIN course ON time_table.course_id = course.course_id
+							WHERE time_table.course_id = '$I_want_to_go_home'";
+
+		$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($course_time_query_result)){
+			echo $row['time_date']."  ";
+			if($row['time_start']==$row['time_end']){
+				echo $row['time_start'];
 			}
-		//
+			else{
+				echo $row['time_start'] . '~' . $row['time_end'] . "  ";
+			}
+			
+		}
+		echo "<br>";
+	
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 ?>
 
 
