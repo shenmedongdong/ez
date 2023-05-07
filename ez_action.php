@@ -138,16 +138,12 @@ Please insert course number: <input name="addcourseid">
 		$addcourseid=$_POST["addcourseid"];
 		$StudentAccount=$_POST["studentid"];
 
-		// select student.account_id == StudentAccount
+		// STUDENT INFO QUERY
 		$S_info_query = "SELECT * FROM student WHERE account_id= '$StudentAccount'";
 		$S_info_query_result = mysqli_query($conn, $S_info_query) or die('MySQL query error');
 		$row = mysqli_fetch_assoc($S_info_query_result);
 		$stu_class = $row['class_id'];
 		$stu_key = $row['student_id'];
-
-		// echo $stu_key;	
-		// echo $addcourseid;
-
 		$C_info_query = "SELECT * FROM course WHERE section_id= '$addcourseid'";
 		$C_info_query_result = mysqli_query($conn, $C_info_query) or die('MySQL query error');
 		$row = mysqli_fetch_assoc($C_info_query_result);
@@ -182,15 +178,6 @@ Please insert course number: <input name="addcourseid">
 			$C_time_start2=$row['time_start'];
 			$C_time_end2=$row['time_end'];
 		}
-		
-		// echo $C_time_date;
-		// echo $C_time_start;
-		// echo $C_time_end;
-		// if(mysqli_num_rows($C_time_query_result)>1){
-		// 	echo $C_time_date2;
-		// 	echo $C_time_start2;
-		// 	echo $C_time_end2;
-		// }
 
 		//check time duplicate
 		for($i=$C_time_start;$i<=$C_time_end;$i++){
