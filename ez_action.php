@@ -1,22 +1,5 @@
-<a href = "ez_index.php"> Go Query Interface</a> <p>
-
-<form name="form_search" method="post" action="ez_action.php" >
-Please insert course name or number: <input name="SectionNumber">
-<input type="submit" value="SEARCH">
-</form>
-
-<form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert student number: <input name="TimeTableNumber">
-<input type="submit" value="TIMETABLE">
-</form>
-
-<form name="form3" method="post" action="ez_action.php" >
-Please insert student number: <input name="studentid">
-Please insert course number: <input name="addcourseid">
-<input type="submit" value="Add" name="add">
-</form>
-
 <?php
+
 	//連接 data server
 	$dbhost = '127.0.0.1';
 	$dbuser = 'gigang_user';
@@ -60,7 +43,37 @@ Please insert course number: <input name="addcourseid">
 			}
 		}
 		//
-		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+?>
+
+
+
+<a href = "ez_index.php"> Go Query Interface</a> <p>
+
+<form name="form_search" method="post" action="ez_action.php" >
+Please insert course name or number: <input name="SectionNumber">
+<input type="submit" value="SEARCH">
+</form>
+
+<form name="form_timetable" method="post" action="ez_scheduler.php" >
+Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>">
+<input type="submit" value="TIMETABLE">
+</form>
+
+<form name="form3" method="post" action="ez_action.php" >
+Please insert student number: <input name="studentid" value="<?php echo $StudentAccount;?>">
+Please insert course number: <input name="addcourseid">
+<input type="submit" value="Add" name="add">
+</form>
+
+
+
+<?php
+
 		//print 選課目錄
 		echo "<p>Course List: </p>";
 		$course_list = "SELECT * FROM course WHERE department = 'IECS'";
@@ -75,6 +88,12 @@ Please insert course number: <input name="addcourseid">
 			}
 		//
 	}
+?>
+
+
+
+<?php
+
 
 	
 	//course search
