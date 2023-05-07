@@ -63,8 +63,8 @@ Please insert course name or number: <input name="SectionNumber">
 
 
 <form name="form3" method="post" action="ez_action.php" >
-Please insert student number: <input name="studentid" value="<?php echo $StudentAccount;?>">
-Please insert course number: <input name="addcourseid">
+Please insert student number: <input name="studentid" value="<?php echo $StudentAccount;?>"required>
+Please insert course number: <input name="addcourseid"required>
 <input type="submit" value="Add" name="add">
 </form>
 
