@@ -44,10 +44,6 @@
 		}
 		//
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 ?>
 
 
@@ -149,8 +145,8 @@ Please insert course number: <input name="addcourseid">
 		$stu_class = $row['class_id'];
 		$stu_key = $row['student_id'];
 
-		echo $stu_key;	
-		echo $addcourseid;
+		// echo $stu_key;	
+		// echo $addcourseid;
 
 		$C_info_query = "SELECT * FROM course WHERE section_id= '$addcourseid'";
 		$C_info_query_result = mysqli_query($conn, $C_info_query) or die('MySQL query error');
