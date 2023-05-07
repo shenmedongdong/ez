@@ -75,13 +75,18 @@ Please insert course number: <input name="addcourseid">
 	if($StudentAccount!=NULL){
 	$gigang_temp_query = "SELECT * FROM course";
 	$gigang_temp_query_result =  mysqli_query($conn, $gigang_temp_query) or die('MySQL query error');
+	echo "<table>";
+	echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+	echo "<tbody>";
 	while($row = mysqli_fetch_array($gigang_temp_query_result)){
-		echo $row['section_id'] . " ";
-		echo $row['course_name'] . " ";
-		echo $row['credits'] . " ";
-		echo $row['require_elective'] . " ";
-		echo $row['department'] . " ";
-		echo $row['amount_now'] . "/".$row['amount_limit'] . "  ";
+		echo "<tr>";
+		echo "<td>" .$row['section_id'] . "</td>";
+		echo "<td>" .$row['course_name'] . "</td>";
+		echo "<td>" .$row['credits'] . "</td>";
+		echo "<td>" .$row['require_elective'] . "</td>";
+		echo "<td>" .$row['department'] . "</td>";
+		echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+		
 		$I_want_to_go_home= $row['course_id'];
 		
 		$course_time_query = "SELECT * FROM time_table
@@ -90,16 +95,18 @@ Please insert course number: <input name="addcourseid">
 
 		$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
 		while($row = mysqli_fetch_array($course_time_query_result)){
-			echo $row['time_date']."  ";
+			echo "<td>" .$row['time_date']. "</td>";
 			if($row['time_start']==$row['time_end']){
-				echo $row['time_start'];
+				echo "<td>" .$row['time_start']. "</td>";
 			}
 			else{
-				echo $row['time_start'] . '~' . $row['time_end'] . "  ";
+				echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
 			}
 			
 		}
-		echo "<br>";
+		echo "</tr>";
+		
+		
 	
 	}
 }
@@ -119,39 +126,116 @@ Please insert course number: <input name="addcourseid">
 		$SectionNumber=$_POST["SectionNumber"];
 	
 		if($SectionNumber==null){
-			$SECTION_NUMBER = "SELECT * FROM course";
-			$SECTION_NUMBER_QUERY =  mysqli_query($conn, $SECTION_NUMBER) or die('MySQL query error');
-			while($row = mysqli_fetch_array($SECTION_NUMBER_QUERY)){
-				echo $row['section_id'] . " ";
-				echo $row['course_name'] . " ";
-				echo $row['credits'] . " ";
-				echo $row['require_elective'] . " ";
-				echo $row['department'] . " ";
-				echo $row['amount_now'] . "/".$row['amount_limit'] . "<br>";
+			$gigang_temp_query = "SELECT * FROM course";
+			$gigang_temp_query_result =  mysqli_query($conn, $gigang_temp_query) or die('MySQL query error');
+			echo "<table>";
+			echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+			echo "<tbody>";
+				while($row = mysqli_fetch_array($gigang_temp_query_result)){
+					echo "<tr>";
+					echo "<td>" .$row['section_id'] . "</td>";
+					echo "<td>" .$row['course_name'] . "</td>";
+					echo "<td>" .$row['credits'] . "</td>";
+					echo "<td>" .$row['require_elective'] . "</td>";
+					echo "<td>" .$row['department'] . "</td>";
+					echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+		
+					$I_want_to_go_home= $row['course_id'];
+		
+					$course_time_query = "SELECT * FROM time_table
+							LEFT JOIN course ON time_table.course_id = course.course_id
+							WHERE time_table.course_id = '$I_want_to_go_home'";
+
+					$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+					while($row = mysqli_fetch_array($course_time_query_result)){
+					echo "<td>" .$row['time_date']. "</td>";
+					if($row['time_start']==$row['time_end']){
+						echo "<td>" .$row['time_start']. "</td>";
+						}
+					else{
+						echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
+					}
+			
+				}
+					echo "</tr>";
 			}
 		}
 		//if
 		$SECTION_NUMBER = "SELECT * FROM course WHERE section_id = '$SectionNumber'";
 		$SECTION_NUMBER_QUERY =  mysqli_query($conn, $SECTION_NUMBER) or die('MySQL query error');
-		while($row = mysqli_fetch_array($SECTION_NUMBER_QUERY)){
-			echo $row['section_id'] . " ";
-			echo $row['course_name'] . " ";
-			echo $row['credits'] . " ";
-			echo $row['require_elective'] . " ";
-			echo $row['department'] . " ";
-			echo $row['amount_now'] . "/".$row['amount_limit'] . "<br>";
-		}
+		if(mysqli_num_rows($SECTION_NUMBER_QUERY)!=0){
+
+			echo "<table>";
+			echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+			echo "<tbody>";
+				while($row = mysqli_fetch_array($SECTION_NUMBER_QUERY)){
+					echo "<tr>";
+					echo "<td>" .$row['section_id'] . "</td>";
+					echo "<td>" .$row['course_name'] . "</td>";
+					echo "<td>" .$row['credits'] . "</td>";
+					echo "<td>" .$row['require_elective'] . "</td>";
+					echo "<td>" .$row['department'] . "</td>";
+					echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+		
+					$I_want_to_go_home= $row['course_id'];
+		
+					$course_time_query = "SELECT * FROM time_table
+							LEFT JOIN course ON time_table.course_id = course.course_id
+							WHERE time_table.course_id = '$I_want_to_go_home'";
+
+					$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+					while($row = mysqli_fetch_array($course_time_query_result)){
+					echo "<td>" .$row['time_date']. "</td>";
+					if($row['time_start']==$row['time_end']){
+						echo "<td>" .$row['time_start']. "</td>";
+						}
+					else{
+						echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
+					}
+			
+				}
+					echo "</tr>";
+			}
+			}
+			else{
+
+			
 		//else if
 		$COURSE_NAME = "SELECT * FROM course WHERE course_name = '$SectionNumber'";
 		$COURSE_NAME_QUERY = mysqli_query($conn, $COURSE_NAME) or die('MySQL query error');
-		while($row = mysqli_fetch_array($COURSE_NAME_QUERY)){
-			echo $row['section_id'] . " ";
-			echo $row['course_name'] . " ";
-			echo $row['credits'] . " ";
-			echo $row['require_elective'] . " ";
-			echo $row['department'] . " ";
-			echo $row['amount_now'] . "/".$row['amount_limit'] . "<br>";
-		}
+		
+			echo "<table>";
+			echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+			echo "<tbody>";
+				while($row = mysqli_fetch_array($COURSE_NAME_QUERY)){
+					echo "<tr>";
+					echo "<td>" .$row['section_id'] . "</td>";
+					echo "<td>" .$row['course_name'] . "</td>";
+					echo "<td>" .$row['credits'] . "</td>";
+					echo "<td>" .$row['require_elective'] . "</td>";
+					echo "<td>" .$row['department'] . "</td>";
+					echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+		
+					$I_want_to_go_home= $row['course_id'];
+		
+					$course_time_query = "SELECT * FROM time_table
+							LEFT JOIN course ON time_table.course_id = course.course_id
+							WHERE time_table.course_id = '$I_want_to_go_home'";
+
+					$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+					while($row = mysqli_fetch_array($course_time_query_result)){
+					echo "<td>" .$row['time_date']. "</td>";
+					if($row['time_start']==$row['time_end']){
+						echo "<td>" .$row['time_start']. "</td>";
+						}
+					else{
+						echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
+					}
+			
+				}
+					echo "</tr>";
+			}
+			}
 	}
 	//add course
 	if(isset($_POST['addcourseid']) && isset($_POST['studentid'] ) && isset($_POST['add'])){
