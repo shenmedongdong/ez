@@ -62,32 +62,40 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop">
         //
 
         //print input的class_id = course_id & 必修課
-        while($row = mysqli_fetch_array($register_query_result)){
-            echo $row['section_id'] . " ";
-            echo $row['course_name'] . " ";
-            echo $row['credits'] . " ";
-            echo $row['require_elective'] . " ";
-            echo $row['department'] ." ";
-            echo $row['amount_now'] . '/' . $row['amount_limit'] . ' ' ;
-           $I_want_to_go_home= $row['course_id'];
+        	echo "<table>";
+	echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+	echo "<tbody>";
+	while($row = mysqli_fetch_array($register_query_result)){
+		echo "<tr>";
+		echo "<td>" .$row['section_id'] . "</td>";
+		echo "<td>" .$row['course_name'] . "</td>";
+		echo "<td>" .$row['credits'] . "</td>";
+		echo "<td>" .$row['require_elective'] . "</td>";
+		echo "<td>" .$row['department'] . "</td>";
+		echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+		
+		$I_want_to_go_home= $row['course_id'];
+		
+		$course_time_query = "SELECT * FROM time_table
+							LEFT JOIN course ON time_table.course_id = course.course_id
+							WHERE time_table.course_id = '$I_want_to_go_home'";
 
-           $course_time_query = "SELECT * FROM time_table
-                                LEFT JOIN course ON time_table.course_id = course.course_id
-                                WHERE time_table.course_id = '$I_want_to_go_home'";
-        
-            $course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
-            while($row = mysqli_fetch_array($course_time_query_result)){
-                echo $row['time_date'].'  ';
-                if($row['time_start']==$row['time_end']){
-                    echo $row['time_start'];
-                }
-                else{
-                    echo $row['time_start'] . '~' . $row['time_end'] . '   ';
-                }
-                
-            }
-            echo "<br>";
-        }
+		$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($course_time_query_result)){
+			echo "<td>" .$row['time_date']. "</td>";
+			if($row['time_start']==$row['time_end']){
+				echo "<td>" .$row['time_start']. "</td>";
+			}
+			else{
+				echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
+			}
+			
+		}
+		echo "</tr>";
+		
+		
+	
+	}
         
         //
 
