@@ -8,7 +8,7 @@
 	$conn = mysqli_connect($dbhost, $dbuser, $dbpass) or die('Error with MySQL connection');
 	mysqli_query($conn, "SET NAMES 'utf8'");
 	mysqli_select_db($conn, $dbname);
-	//
+	
 
 	if(isset($_POST['StudentAccount'])) {
 		$StudentAccount=$_POST["StudentAccount"];
@@ -246,9 +246,7 @@ Please insert course number: <input name="addcourseid">
 		}
 		else if($flag==1){
 			echo "You already have a different course in this time!";
-			//echo $C_time_date;
-			//echo $C_time_start;
-			//echo $C_time_end;
+
 		}
 
 		else{
