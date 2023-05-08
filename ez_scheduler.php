@@ -1,9 +1,48 @@
-<a href = "ez_index.php"> Go Query Interface</a> <p>
+<head>
+  <title>Bootstrap 5 Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<div class="container-fluid p-3 bg-primary text-white text-center mb-3">
+	<h3>IECS課程檢索系統</h3>
+</div>
+
+<a href="ez_index.php" class="btn btn-primary mb-2">重新查詢</a>
 
 <form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert 希望退選的課程的代碼: <input name="HopeDrop">
+Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
 <input type="submit" value="DROP">
 </form>
+
+<style>
+	table, thead{
+		justify-content: center;
+		text-align: center;
+		margin: auto;
+		border: solid 2px;
+		border-collapse: collapse;
+		padding: auto;
+        margin-bottom: 30px;
+	}
+
+	tr, th,td {
+		justify-content: center;
+		text-align: center;
+		margin: auto;
+		border: solid 2px;
+		border-collapse: collapse;
+		padding: 5px;
+	}
+
+    h2 {
+        text-align: center;
+		margin bottom: 3em;
+    }
+    
+</style>
 
 <?php
     $dbhost = '127.0.0.1';
@@ -31,8 +70,8 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop">
         //
 
         //print student的 account, class
-        echo "<p>STUDENT NUMBER: </P>" . "$TimeTableNumber" ."<br>";
-        echo "<p>STUDENT CLASS: </P>" . "$stu_class_name" ."<br>";
+        // echo "<p>STUDENT NUMBER: </P>" . "$TimeTableNumber" ."<br>";
+        // echo "<p>STUDENT CLASS: </P>" . "$stu_class_name" ."<br>";
         //
 
         // SELECT StudentAccount的class_id & 必修
@@ -58,56 +97,83 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop">
         $stu_credits_arr = mysqli_fetch_array($stu_credits_query_result);
         $stu_credits = $stu_credits_arr['sum_credits'];
 
-        echo "<p>STUDENT CREDITS: </p>"  . "$stu_credits" . "<br>";
-        //
+ //       echo "<p>STUDENT CREDITS: </p>"  . "$stu_credits" . "<br>";
+
+        echo "<h2>My Information:</h2>";
+        echo "<table>";
+	    echo "<thead>
+            <tr>
+                <th>Student Number:</th>
+            </tr>
+            <tr>
+                <th>$TimeTableNumber</th>
+            </tr>
+            <tr>
+                <th>Student Class</th>
+            </tr>
+            <tr>
+                <th>$stu_class_name</th>
+            </tr>
+            <tr>
+                <th>Student Credits</th>
+            </tr>
+            <tr>
+                <th>$stu_credits</th>
+            </tr>
+            </thead>";
+            echo "<tbody>";
 
         //print input的class_id = course_id & 必修課
-        	echo "<table>";
-	echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
-	echo "<tbody>";
-	while($row = mysqli_fetch_array($register_query_result)){
-		echo "<tr>";
-		echo "<td>" .$row['section_id'] . "</td>";
-		echo "<td>" .$row['course_name'] . "</td>";
-		echo "<td>" .$row['credits'] . "</td>";
-		echo "<td>" .$row['require_elective'] . "</td>";
-		echo "<td>" .$row['department'] . "</td>";
-		echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
-		
-		$I_want_to_go_home= $row['course_id'];
-		
-		$course_time_query = "SELECT * FROM time_table
-							LEFT JOIN course ON time_table.course_id = course.course_id
-							WHERE time_table.course_id = '$I_want_to_go_home'";
-
-		$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
-		while($row = mysqli_fetch_array($course_time_query_result)){
-			echo "<td>" .$row['time_date']. "</td>";
-			if($row['time_start']==$row['time_end']){
-				echo "<td>" .$row['time_start']. "</td>";
-			}
-			else{
-				echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
-			}
-			
-		}
-		echo "</tr>";
-		
-		
-	
-	}
+    
         
-        //
+        echo "<table>";
 
-        //
-        // $course_time_query = "SELECT * FROM time_table
-        //                         LEFT JOIN course ON time_table.course_id = course.course_id
-        //                         WHERE time_table.course_id = '$I_want_to_go_home'";
-        
-        // $course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
-        // while($row = mysqli_fetch_array($course_time_query_result)){
-        //     echo $row['time_start'] . '~' . $row['time_end'];
-        // }
+        echo "<thead>
+                <tr>
+                    <th>code</th>
+                    <th>Name</th>
+                    <th>Credit</th>
+                    <th>Type</th>
+                    <th>Department</th>
+                    <th>Quota</th>
+                    <th>Week</th>
+                    <th>Time</th>
+                    <th>Week</th>
+                    <th>Time</th>
+                </tr>
+            </thead>";
+        echo "<tbody>";
+
+        while($row = mysqli_fetch_array($register_query_result)){
+            echo "<tr>";
+            echo "<td>" .$row['section_id'] . "</td>";
+            echo "<td>" .$row['course_name'] . "</td>";
+            echo "<td>" .$row['credits'] . "</td>";
+            echo "<td>" .$row['require_elective'] . "</td>";
+            echo "<td>" .$row['department'] . "</td>";
+            echo "<td>" .$row['amount_now'] . "/".$row['amount_limit'] . "</td>";
+            
+            $I_want_to_go_home= $row['course_id'];
+            
+            $course_time_query = "SELECT * FROM time_table
+                                LEFT JOIN course ON time_table.course_id = course.course_id
+                                WHERE time_table.course_id = '$I_want_to_go_home'";
+
+            $course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+            while($row = mysqli_fetch_array($course_time_query_result)){
+                echo "<td>" .$row['time_date']. "</td>";
+                if($row['time_start']==$row['time_end']){
+                    echo "<td>" .$row['time_start']. "</td>";
+                }
+                else{
+                    echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
+                }
+                
+            }
+            echo "</tr>";
+        }
+
+        echo "<h2>My TimeTable</h2>";
     }
 
 
@@ -174,5 +240,4 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop">
             echo "Drop Success!";
         }
     }
-
 ?>

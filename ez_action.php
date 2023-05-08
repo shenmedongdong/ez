@@ -1,5 +1,38 @@
+<head>
+  <title>Bootstrap 5 Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<style>
+	table, thead{
+		justify-content: center;
+		text-align: center;
+		margin: auto;
+		border: solid 2px;
+		border-collapse: collapse;
+		padding: auto;
+	}
+
+	tr, th,td {
+		justify-content: center;
+		text-align: center;
+		margin: auto;
+		border: solid 2px;
+		border-collapse: collapse;
+		padding: 5px;
+	}
+</style>
+
+	<div class="container-fluid p-3 bg-primary text-white text-center mb-3">
+  		<h3>IECS課程檢索系統</h3>
+	</div>
+
 <?php
 	error_reporting(0);
+	
 	//連接 data server
 	$dbhost = '127.0.0.1';
 	$dbuser = 'gigang_user';
@@ -43,33 +76,25 @@
 			}
 		}
 	}	
-		//
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ?>
 
-
-
-<a href = "ez_index.php"> Go Query Interface</a> <p>
+<a href="ez_index.php" class="btn btn-primary mb-2">重新查詢</a>
 
 <form name="form_timetable" method="post" action="ez_scheduler.php" >
 Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>" required>
 <input type="submit" value="TIMETABLE">
 </form>
 
-<form name="form_search" method="post" action="ez_action.php" >
-Please insert course name or number: <input name="SectionNumber">
-<input type="submit" value="SEARCH">
-</form>
-
-
-
-<form name="form3" method="post" action="ez_action.php" >
+<form name="form3" method="post" action="ez_action.php">
 Please insert student number: <input name="studentid" value="<?php echo $StudentAccount;?>"required>
 Please insert course number: <input name="addcourseid"required>
 <input type="submit" value="Add" name="add">
 </form>
 
-
+<form name="form_search" method="post" action="ez_action.php" style="margin-bottom: 30px" >
+Please insert course name or number: <input name="SectionNumber">
+<input type="submit" value="SEARCH">
+</form>
 
 <?php
 
@@ -77,7 +102,20 @@ Please insert course number: <input name="addcourseid"required>
 	$gigang_temp_query = "SELECT * FROM course";
 	$gigang_temp_query_result =  mysqli_query($conn, $gigang_temp_query) or die('MySQL query error');
 	echo "<table>";
-	echo "<thead><tr><th>code</th><th>Name</th><th>Credit</th><th>Type</th><th>Department</th><th>Quota</th><th>Time</th></tr></thead>";
+	echo "<thead>
+			<tr>
+				<th>code</th>
+				<th>Name</th>
+				<th>Credit</th>
+				<th>Type</th>
+				<th>Department</th>
+				<th>Quota</th>
+				<th>Week</th>
+				<th>Time</th>
+				<th>Week</th>
+				<th>Time</th>
+			</tr>
+		 </thead>";
 	echo "<tbody>";
 	while($row = mysqli_fetch_array($gigang_temp_query_result)){
 		echo "<tr>";
