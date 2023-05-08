@@ -7,7 +7,6 @@
 </head>
 
 
-
 <style>
 	table, thead{
 		justify-content: center;
@@ -22,7 +21,7 @@
 		justify-content: center;
 		text-align: center;
 		margin: auto;
-		border: solid 2px;
+		border: solid 1px;
 		border-collapse: collapse;
 		padding: 5px;
 	}
@@ -30,15 +29,14 @@
 
 
 <div class="container-fluid p-3 bg-primary text-white text-center mb-5">
-  <h3>IECS課程檢索系統</h3>
+    <h3>IECS課程檢索系統</h3>
 </div>
-
 
 
 <center>
     <form name="form_StudentNumber" method="post" action="ez_action.php">
-    Please insert studnet number: <input name="StudentAccount">
-    <input type="submit" value="送出">
+    Please insert your student number: <input name="StudentAccount">
+    <input type="submit" value="Send">
     </form>
         
     <h4 class="mt-5" style="font-weight: bold">説明</h4>
@@ -56,5 +54,4 @@
             <td>課表、預選資料、考程表、缺考、補考等個人資訊，請至【逢甲人資訊服務入口】查詢。</th>
         </tr>
     </table>
-
 </center>

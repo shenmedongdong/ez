@@ -13,8 +13,8 @@
 <a href="ez_index.php" class="btn btn-primary mb-2">重新查詢</a>
 
 <form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
-<input type="submit" value="DROP">
+Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
+<input type="submit" value="Drop">
 </form>
 
 <style>
@@ -22,7 +22,7 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
 		justify-content: center;
 		text-align: center;
 		margin: auto;
-		border: solid 2px;
+		border: solid 1px;
 		border-collapse: collapse;
 		padding: auto;
         margin-bottom: 30px;
@@ -32,7 +32,7 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
 		justify-content: center;
 		text-align: center;
 		margin: auto;
-		border: solid 2px;
+		border: solid 1px;
 		border-collapse: collapse;
 		padding: 5px;
 	}
@@ -45,6 +45,8 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
 </style>
 
 <?php
+    error_reporting(0);
+
     $dbhost = '127.0.0.1';
     $dbuser = 'gigang_user';
     $dbpass = 'test1234';
@@ -54,41 +56,36 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
     mysqli_select_db($conn, $dbname);
     //
 
+    //TimeTableNumber(input) = drop하고 싶은 課程代碼
     if(isset($_POST['TimeTableNumber'])) {
         $TimeTableNumber=$_POST["TimeTableNumber"];
 
-        // SELECT student的資料, 用StudentAccount(input)
+        // student + class = 可以找class_id
         $stu_class_query = "SELECT * FROM student
                             LEFT JOIN class ON student.class_id = class.class_id
                             WHERE account_id= '$TimeTableNumber'";
         $stu_class_query_result = mysqli_query($conn, $stu_class_query) or die('MySQL query error');
         $stu_class_arr = mysqli_fetch_array($stu_class_query_result);
             
+       // input의 class_id, student_id, class_name 저장 
         $stu_class = $stu_class_arr['class_id'];
         $stu_key = $stu_class_arr['student_id'];
         $stu_class_name = $stu_class_arr['class_name'];
         //
 
-        //print student的 account, class
-        // echo "<p>STUDENT NUMBER: </P>" . "$TimeTableNumber" ."<br>";
-        // echo "<p>STUDENT CLASS: </P>" . "$stu_class_name" ."<br>";
-        //
-
-        // SELECT StudentAccount的class_id & 必修
+        // 입력한 學號랑 같은 반 수업의 必修課
         $S_require_query = "SELECT * FROM course WHERE class_id = '$stu_class' AND require_elective = '必修'";
         $S_require_query_result = mysqli_query($conn, $S_require_query) or die('MySQL query error');
         //
 
-        // SELECT 在register(table)裡面, 跟StudentAccount(input)一樣
+        // regigster 테이블에 input이 있는지 없는지
         $register_query = "SELECT * FROM register
                             LEFT JOIN course ON register.course_id = course.course_id
                             WHERE student_id='$stu_key'";
 
-    
         $register_query_result = mysqli_query($conn, $register_query) or die('MySQL query error');
-        //
 
-        //print student的 credits
+        //register + course 그리고 sum(credits) for my credits
         $stu_credits_query = "SELECT SUM(credits) AS sum_credits FROM course
                                 LEFT JOIN register ON course.course_id = register.course_id
                                 WHERE register.student_id='$stu_key'";
@@ -99,40 +96,37 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
 
  //       echo "<p>STUDENT CREDITS: </p>"  . "$stu_credits" . "<br>";
 
-        echo "<h2>My Information:</h2>";
+        //my_info
+        echo "<h2>My Information</h2>";
         echo "<table>";
 	    echo "<thead>
             <tr>
-                <th>Student Number:</th>
+                <th>My Student Number</th>
             </tr>
             <tr>
                 <th>$TimeTableNumber</th>
             </tr>
             <tr>
-                <th>Student Class</th>
+                <th>My Class</th>
             </tr>
             <tr>
                 <th>$stu_class_name</th>
             </tr>
             <tr>
-                <th>Student Credits</th>
+                <th>My Credits</th>
             </tr>
             <tr>
                 <th>$stu_credits</th>
             </tr>
             </thead>";
             echo "<tbody>";
-
-        //print input的class_id = course_id & 必修課
     
-        
         echo "<table>";
-
         echo "<thead>
                 <tr>
-                    <th>code</th>
+                    <th>Code</th>
                     <th>Name</th>
-                    <th>Credit</th>
+                    <th>Credits</th>
                     <th>Type</th>
                     <th>Department</th>
                     <th>Quota</th>
@@ -143,7 +137,7 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
                 </tr>
             </thead>";
         echo "<tbody>";
-
+        // (1)register_query_result 맨처음에 같은 반 必修 insert (2)는 課表관리 --- $register_query_result=84항
         while($row = mysqli_fetch_array($register_query_result)){
             echo "<tr>";
             echo "<td>" .$row['section_id'] . "</td>";
@@ -167,25 +161,22 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
                 }
                 else{
                     echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
-                }
-                
+                } 
             }
             echo "</tr>";
         }
-
-        echo "<h2>My TimeTable</h2>";
+        echo "<h2>My Timetable</h2>";
     }
 
 
     if(isset($_POST['HopeDrop'])) { 
         $HopeDrop=$_POST["HopeDrop"];
-        //
+
         $HopeDrop_query = "SELECT * FROM register
                             LEFT JOIN course ON register.course_id = course.course_id
                             WHERE section_id = '$HopeDrop'";
-        //
 
-        //
+        // input的course_id, section_id
         $HopeDrop_query_result = mysqli_query($conn, $HopeDrop_query) or die('MySQL query error');
         $drop_check1_arr = mysqli_fetch_array($HopeDrop_query_result);
         $register_course_id = $drop_check1_arr['course_id'];
@@ -193,7 +184,7 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
         //
 
         
-        //
+        //register안에 course의 sum(credits)
         $drop_check2_query = "SELECT SUM(credits) AS sum_credits2 FROM register
                                 LEFT JOIN course ON register.course_id = course.course_id";
         //
@@ -204,11 +195,11 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
         $stu_credits = $drop_check2_arr['sum_credits2']; 
         //
 
-        //
+        //course 테이블 안에서 내가 입력하는 課程代碼랑 같은 수업
         $drop_course_query = "SELECT * FROM course WHERE section_id= '$HopeDrop'";
         //
 
-        //
+        //$drop_course_credit register的sum(credits)-希望drop的credit <9 不能退選 ///// $drop_course_class, $drop_course_status = course的class 比較 學生的class 218항
         $drop_course_query_result = mysqli_query($conn, $drop_course_query) or die('MySQL query error');
         $drop_course_query_arr = mysqli_fetch_array($drop_course_query_result);
         $drop_course_credit = $drop_course_query_arr['credits'];
@@ -223,21 +214,27 @@ Please insert 希望退選的課程的代碼: <input name="HopeDrop" required>
                             WHERE section_id = '$HopeDrop'";
         $drop_require_query_result = mysqli_query($conn, $drop_require_query) or die('MySQL query error');
         $drop_require_query_arr = mysqli_fetch_array($drop_require_query_result);
-        $stu_drop_class = $drop_require_query_arr['class_id'];
+        $stu_drop_class = $drop_require_query_arr['class_id']; // 208항이랑 비교하기 위해서
         //
 
-        if($stu_credits-$drop_course_credit<9){
-            echo "Students can't be credits under 9";
+        // $stu_credits = register的credit 189,196 //// drop_course_credit 課程代買(input) 200,206
+        if($HopeDrop != $register_section_id){
+            echo "<h2>不好意思，課表上沒有這門課，再重新做一下</h2>";
+        }
+            
+
+        else if($stu_credits-$drop_course_credit<9){
+            echo "<h2>Students can't be credits under 9</h2>";
         }
 
         else if($drop_course_status=="必修" && $drop_course_class==$stu_drop_class){
-            echo "Students can't drop the reqiure course";
+            echo "<h2>Students can't drop the require course</h2>";
         }
 
         else if($register_section_id == $HopeDrop) {
             $drop_query = "DELETE FROM register WHERE course_id = '$register_course_id'";
             $drop_query_Result = mysqli_query($conn, $drop_query) or die('MySQL query error');
-            echo "Drop Success!";
+            echo "<h2>Drop Success!</h2>";
         }
     }
 ?>

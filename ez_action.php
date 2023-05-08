@@ -26,9 +26,9 @@
 	}
 </style>
 
-	<div class="container-fluid p-3 bg-primary text-white text-center mb-3">
-  		<h3>IECS課程檢索系統</h3>
-	</div>
+<div class="container-fluid p-3 bg-primary text-white text-center mb-3">
+	<h3>IECS課程檢索系統</h3>
+</div>
 
 <?php
 	error_reporting(0);
@@ -46,31 +46,32 @@
 	if(isset($_POST['StudentAccount'])) {
 		$StudentAccount=$_POST["StudentAccount"];
 
-		// SELECT student的資料, 用StudentAccount(input)
+		// StudentAccount(input)은 account_id, student와 class를 join해서 input에 해당하는 class_id랑 student_id를 찾음
 		$stu_class_query = "SELECT * FROM student
 							LEFT JOIN class ON student.class_id = class.class_id
-							WHERE account_id= '$StudentAccount'";
+							WHERE account_id = '$StudentAccount'";
 		$stu_class_query_result = mysqli_query($conn, $stu_class_query) or die('MySQL query error');
 		$stu_class_arr = mysqli_fetch_array($stu_class_query_result);
 			
 		$stu_class = $stu_class_arr['class_id'];
 		$stu_key = $stu_class_arr['student_id'];
+		//
 
-		// SELECT StudentAccount的class_id & 必修
+		// course table에서 class_id가 stu_class(input의 class_id)와 같고 必修課인 수업을 SELECT --- input의 class에 따라 要選必修課
 		$S_require_query = "SELECT * FROM course WHERE class_id = '$stu_class' AND require_elective = '必修'";
 		$S_require_query_result = mysqli_query($conn, $S_require_query) or die('MySQL query error');
 		//
 
-		// SELECT 在register(table)裡面, 跟StudentAccount(input)一樣
+		// register table에 input의 student_id가 있는지 없는지 확인
 		$register_query = "SELECT * FROM register
 							LEFT JOIN course ON register.course_id = course.course_id
 							WHERE student_id='$stu_key'";
 		$register_query_result = mysqli_query($conn, $register_query) or die('MySQL query error'); //없음
 		//
 
-		//if 在register(table)裡面row=0, 跟StudentAccount的class_id, 必修 都加在register(table)
+		//만약에 input의 student_id가 register에 없다면 stu_key랑 require_temp['course_id'] 추가 --- stu_key=input(學號), require_temp['course_id']=61항
 		if(mysqli_num_rows($register_query_result)==0){
-			while($require_temp = mysqli_fetch_assoc($S_require_query_result)){
+			while($require_temp = mysqli_fetch_array($S_require_query_result)){
 				$add_query = "INSERT INTO register(student_id,course_id) VALUES ('$stu_key','" . $require_temp['course_id'] . "')";
 				$add_query_result = mysqli_query($conn, $add_query) or die('MySQL query error');
 			}
@@ -82,7 +83,7 @@
 
 <form name="form_timetable" method="post" action="ez_scheduler.php" >
 Please insert student number: <input name="TimeTableNumber" value="<?php echo $StudentAccount;?>" required>
-<input type="submit" value="TIMETABLE">
+<input type="submit" value="Timetable">
 </form>
 
 <form name="form3" method="post" action="ez_action.php">
@@ -93,20 +94,30 @@ Please insert course number: <input name="addcourseid"required>
 
 <form name="form_search" method="post" action="ez_action.php" style="margin-bottom: 30px" >
 Please insert course name or number: <input name="SectionNumber">
-<input type="submit" value="SEARCH">
+<input type="submit" value="Search">
 </form>
 
 <?php
 
+	//만약에 input값이 null이 아니라면, course全部列出來(選課目錄), 처음에는 echo 테이블 헤드(th)
 	if($StudentAccount!=NULL){
 	$gigang_temp_query = "SELECT * FROM course";
 	$gigang_temp_query_result =  mysqli_query($conn, $gigang_temp_query) or die('MySQL query error');
+	$gigang_temp_arr = mysqli_fetch_array($gigang_temp_query_result);
+	
+	$count_course_query = "SELECT count(course_id) AS cnt_course FROM course";
+	$count_course_query_result =  mysqli_query($conn, $count_course_query) or die('MySQL query error');
+	$count_course_query_arr = mysqli_fetch_array($count_course_query_result);
+	
+	echo "IECS課程 : " . $count_course_query_arr['cnt_course'] . "筆" . "<br>";
+	echo "<br>";
+
 	echo "<table>";
 	echo "<thead>
 			<tr>
-				<th>code</th>
+				<th>Code</th>
 				<th>Name</th>
-				<th>Credit</th>
+				<th>Credits</th>
 				<th>Type</th>
 				<th>Department</th>
 				<th>Quota</th>
@@ -117,6 +128,7 @@ Please insert course name or number: <input name="SectionNumber">
 			</tr>
 		 </thead>";
 	echo "<tbody>";
+	//만약에 input값이 null이 아니라면, course全部列出來(選課目錄), 처음에는 echo 테이블 데이터(td)
 	while($row = mysqli_fetch_array($gigang_temp_query_result)){
 		echo "<tr>";
 		echo "<td>" .$row['section_id'] . "</td>";
@@ -128,11 +140,14 @@ Please insert course name or number: <input name="SectionNumber">
 		
 		$I_want_to_go_home= $row['course_id'];
 		
+		// time_table + course
 		$course_time_query = "SELECT * FROM time_table
 							LEFT JOIN course ON time_table.course_id = course.course_id
 							WHERE time_table.course_id = '$I_want_to_go_home'";
 
 		$course_time_query_result = mysqli_query($conn, $course_time_query) or die('MySQL query error');
+
+		//time_table의 time_date, time_start, time_end 列出來
 		while($row = mysqli_fetch_array($course_time_query_result)){
 			echo "<td>" .$row['time_date']. "</td>";
 			if($row['time_start']==$row['time_end']){
@@ -141,16 +156,12 @@ Please insert course name or number: <input name="SectionNumber">
 			else{
 				echo "<td>" .$row['time_start'] . '~' . $row['time_end'] . "</td>";
 			}
-			
 		}
-		echo "</tr>";
-		
-		
-	
+		echo "</tr>";	
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ?>
 
 
