@@ -292,7 +292,7 @@ Please insert course name or number: <input name="SectionNumber">
 
 		$addcourseid=$_POST["addcourseid"];
 		$StudentAccount=$_POST["studentid"];
-
+		//$test_full_amount = "INSERT INTO register(student)"
 		// STUDENT INFO QUERY
 		$S_info_query = "SELECT * FROM student WHERE account_id= '$StudentAccount'";
 		$S_info_query_result = mysqli_query($conn, $S_info_query) or die('MySQL query error');

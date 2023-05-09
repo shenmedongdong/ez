@@ -12,9 +12,10 @@
 
 <a href="ez_index.php" class="btn btn-primary mb-2">重新查詢</a>
 
-<form name="form_timetable" method="post" action="ez_scheduler.php" >
-Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
-<input type="submit" value="Drop">
+<form name="form_timetable" method="post" action="ez_scheduler.php">
+Please insert student number: <input name="studentid" required>
+Please insert 希望退選的課程代碼: <input name="HopeDrop"required>
+<input type="submit" value="Drop" name="drop">
 </form>
 
 <style>
@@ -85,7 +86,7 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
 
         $register_query_result = mysqli_query($conn, $register_query) or die('MySQL query error');
 
-        //register + course 그리고 sum(credits) for my credits
+        //register + course 그리고 sum(credits) for my_info credits
         $stu_credits_query = "SELECT SUM(credits) AS sum_credits FROM course
                                 LEFT JOIN register ON course.course_id = register.course_id
                                 WHERE register.student_id='$stu_key'";
@@ -168,9 +169,17 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         echo "<h2>My Timetable</h2>";
     }
 
+//  if(isset($_POST['addcourseid']) && isset($_POST['studentid'] ) && isset($_POST['add']))
+    if(isset($_POST['studentid'])&& isset($_POST['HopeDrop']) && isset($_POST['drop'])) { 
+        $HopeDrop = $_POST["HopeDrop"];
+        $studentid = $_POST['studentid'];
 
-    if(isset($_POST['HopeDrop'])) { 
-        $HopeDrop=$_POST["HopeDrop"];
+        // STUDENT INFO QUERY
+		$S_info_query = "SELECT * FROM student WHERE account_id= '$studentid'";
+		$S_info_query_result = mysqli_query($conn, $S_info_query) or die('MySQL query error');
+		$row = mysqli_fetch_array($S_info_query_result);
+		$stu_class = $row['class_id'];
+		$stu_key = $row['student_id'];
 
         $HopeDrop_query = "SELECT * FROM register
                             LEFT JOIN course ON register.course_id = course.course_id
@@ -187,7 +196,6 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         //course 테이블 안에서 내가 입력하는 課程代碼랑 같은 수업
         $drop_course_query = "SELECT * FROM course WHERE section_id= '$HopeDrop'";
         //
-
         //$drop_course_credit register的sum(credits)-希望drop的credit <9 不能退選 ///// $drop_course_class, $drop_course_status = course的class 比較 學生的class 218항
         $drop_course_query_result = mysqli_query($conn, $drop_course_query) or die('MySQL query error');
         $drop_course_query_arr = mysqli_fetch_array($drop_course_query_result);
@@ -205,28 +213,24 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         $drop_require_query_arr = mysqli_fetch_array($drop_require_query_result);
         $stu_drop_class = $drop_require_query_arr['class_id']; // 208항이랑 비교하기 위해서
 
-        //
-        //register + course 그리고 sum(credits) for my credits
-        // $stu_credits_query = "SELECT SUM(credits) AS sum_credits FROM course
-        //                         LEFT JOIN register ON course.course_id = register.course_id
-        //                         WHERE register.student_id='$stu_key'";
+        $stu_credits_query2 = "SELECT SUM(credits) AS sum_credits FROM course
+                                LEFT JOIN register ON course.course_id = register.course_id
+                                WHERE register.student_id='$stu_key'";
 
-        // $stu_credits_query_result = mysqli_query($conn, $stu_credits_query) or die('MySQL query error');
-        // $stu_credits_arr = mysqli_fetch_array($stu_credits_query_result);
-        // $stu_credits = $stu_credits_arr['sum_credits'];        
-        // $stu_credits = register的credit 189,196 //// drop_course_credit 課程代買(input) 200,206
+        $stu_credits_query_result2 = mysqli_query($conn, $stu_credits_query2) or die('MySQL query error');
+        $stu_credits_arr2 = mysqli_fetch_array($stu_credits_query_result2);
+        $stu_credits2 = $stu_credits_arr2['sum_credits'];
 
         if($HopeDrop != $register_section_id){
             echo "<h2>不好意思，課表上沒有這門課，再重新做一下</h2>";
         }
-            
-
-        else if($stu_credits-$drop_course_credit<9){
-            echo "<h2>Students can't be credits under 9</h2>";
+        
+        else if($drop_course_status=="必修" && $drop_course_class==$stu_class){
+            echo "<h2>Students can't drop the require course</h2>";
         }
 
-        else if($drop_course_status=="必修" && $drop_course_class==$stu_drop_class){
-            echo "<h2>Students can't drop the require course</h2>";
+        else if($stu_credits2-$drop_course_credit<9){
+            echo "<h2>Students can't be credits under 9</h2>";
         }
 
         else if($register_section_id == $HopeDrop) {
