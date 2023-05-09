@@ -94,7 +94,7 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         $stu_credits_arr = mysqli_fetch_array($stu_credits_query_result);
         $stu_credits = $stu_credits_arr['sum_credits'];
 
- //       echo "<p>STUDENT CREDITS: </p>"  . "$stu_credits" . "<br>";
+        //echo "<p>STUDENT CREDITS: </p>"  . "$stu_credits" . "<br>";
 
         //my_info
         echo "<h2>My Information</h2>";
@@ -183,17 +183,6 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         $register_section_id = $drop_check1_arr['section_id'];
         //
 
-        
-        //register안에 course의 sum(credits)
-        $drop_check2_query = "SELECT SUM(credits) AS sum_credits2 FROM register
-                                LEFT JOIN course ON register.course_id = course.course_id";
-        //
-
-        //
-        $drop_check2_query_result = mysqli_query($conn, $drop_check2_query) or die('MySQL query error');
-        $drop_check2_arr = mysqli_fetch_array($drop_check2_query_result);  
-        $stu_credits = $drop_check2_arr['sum_credits2']; 
-        //
 
         //course 테이블 안에서 내가 입력하는 課程代碼랑 같은 수업
         $drop_course_query = "SELECT * FROM course WHERE section_id= '$HopeDrop'";
@@ -215,9 +204,18 @@ Please insert 希望退選的課程代碼: <input name="HopeDrop" required>
         $drop_require_query_result = mysqli_query($conn, $drop_require_query) or die('MySQL query error');
         $drop_require_query_arr = mysqli_fetch_array($drop_require_query_result);
         $stu_drop_class = $drop_require_query_arr['class_id']; // 208항이랑 비교하기 위해서
-        //
 
+        //
+        //register + course 그리고 sum(credits) for my credits
+        // $stu_credits_query = "SELECT SUM(credits) AS sum_credits FROM course
+        //                         LEFT JOIN register ON course.course_id = register.course_id
+        //                         WHERE register.student_id='$stu_key'";
+
+        // $stu_credits_query_result = mysqli_query($conn, $stu_credits_query) or die('MySQL query error');
+        // $stu_credits_arr = mysqli_fetch_array($stu_credits_query_result);
+        // $stu_credits = $stu_credits_arr['sum_credits'];        
         // $stu_credits = register的credit 189,196 //// drop_course_credit 課程代買(input) 200,206
+
         if($HopeDrop != $register_section_id){
             echo "<h2>不好意思，課表上沒有這門課，再重新做一下</h2>";
         }
